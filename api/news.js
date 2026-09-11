@@ -1,21 +1,17 @@
 export default async function handler(req, res) {
+
     try {
 
         const feeds = [
 
-            // Indian Cricket
             "https://news.google.com/rss/search?q=Indian+cricket+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
 
-            // Team India
             "https://news.google.com/rss/search?q=Team+India+cricket+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
 
-            // IPL
             "https://news.google.com/rss/search?q=IPL+cricket+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
 
-            // Indian Cricket Players
             "https://news.google.com/rss/search?q=Indian+cricket+players+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
 
-            // BCCI
             "https://news.google.com/rss/search?q=BCCI+cricket+when:1d&hl=en-IN&gl=IN&ceid=IN:en"
 
         ];
@@ -28,14 +24,12 @@ export default async function handler(req, res) {
 
                 const response = await fetch(feed);
 
-                if (!response.ok) {
-                    continue;
-                }
+                if (!response.ok) continue;
 
                 const xml = await response.text();
 
                 const items =
-                    xml.match(/<item>[\s\S]*?<\/item>/g) || [];
+                    xml.match(/<item>[\s\S]*?<\/item>/gi) || [];
 
                 for (const item of items) {
 
@@ -51,102 +45,157 @@ export default async function handler(req, res) {
                     const sourceMatch =
                         item.match(/<source[^>]*>([\s\S]*?)<\/source>/i);
 
-                    if (!titleMatch || !linkMatch) {
-                        continue;
-                    }
+                    const descriptionMatch =
+                        item.match(/<description>([\s\S]*?)<\/description>/i);
 
-                    let title = cleanText(titleMatch[1]);
-                    let link = cleanText(linkMatch[1]);
-                    let date = dateMatch
-                        ? cleanText(dateMatch[1])
-                        : "";
+                    if (!titleMatch || !linkMatch) continue;
 
-                    let source = sourceMatch
-                        ? cleanText(sourceMatch[1])
-                        : "Cricket News";
+                    const title =
+                        cleanText(titleMatch[1]);
 
-                    if (!title || !link) {
-                        continue;
+                    const link =
+                        cleanText(linkMatch[1]);
+
+                    const date =
+                        dateMatch
+                            ? cleanText(dateMatch[1])
+                            : "";
+
+                    const source =
+                        sourceMatch
+                            ? cleanText(sourceMatch[1])
+                            : "Cricket News";
+
+                    let image = "";
+
+                    if (descriptionMatch) {
+
+                        const description =
+                            descriptionMatch[1];
+
+                        const imageMatch =
+                            description.match(
+                                /<img[^>]+src=["']([^"']+)["']/i
+                            );
+
+                        if (imageMatch) {
+                            image = imageMatch[1];
+                        }
+
                     }
 
                     articles.push({
-                        title: title,
-                        link: link,
-                        source: source,
-                        date: date
+
+                        title,
+                        link,
+                        source,
+                        date,
+                        image
+
                     });
 
                 }
 
-            } catch (feedError) {
+            } catch (error) {
 
-                console.error("Feed error:", feedError);
+                console.error(
+                    "Feed error:",
+                    error
+                );
 
             }
 
         }
 
-        // Remove duplicate news
+
+        // Remove duplicate headlines
+
         const uniqueArticles = [];
-        const seenTitles = new Set();
+
+        const seen = new Set();
 
         for (const article of articles) {
 
-            const key = article.title
-                .toLowerCase()
-                .replace(/\s+/g, " ")
-                .trim();
+            const key =
+                article.title
+                    .toLowerCase()
+                    .replace(/\s+/g, " ")
+                    .trim();
 
-            if (!seenTitles.has(key)) {
+            if (!seen.has(key)) {
 
-                seenTitles.add(key);
+                seen.add(key);
+
                 uniqueArticles.push(article);
 
             }
 
         }
 
-        // Newest news first
+
+        // Newest first
+
         uniqueArticles.sort((a, b) => {
 
-            const dateA = new Date(a.date).getTime() || 0;
-            const dateB = new Date(b.date).getTime() || 0;
+            const dateA =
+                new Date(a.date).getTime() || 0;
+
+            const dateB =
+                new Date(b.date).getTime() || 0;
 
             return dateB - dateA;
 
         });
 
-        // Send maximum 50 articles
-        const result = uniqueArticles.slice(0, 50);
 
-        res.status(200).json(result);
+        res.status(200).json(
+            uniqueArticles.slice(0, 50)
+        );
+
 
     } catch (error) {
 
-        console.error("News API Error:", error);
+        console.error(
+            "News API Error:",
+            error
+        );
 
         res.status(500).json({
-            error: "Unable to load cricket news"
+
+            error:
+                "Unable to load cricket news"
+
         });
 
     }
+
 }
 
 
-// Clean RSS text
 function cleanText(text) {
 
-    return text
+    return String(text)
+
         .replace(/<!\[CDATA\[/g, "")
+
         .replace(/\]\]>/g, "")
+
         .replace(/&amp;/g, "&")
+
         .replace(/&quot;/g, '"')
+
         .replace(/&#39;/g, "'")
+
         .replace(/&apos;/g, "'")
+
         .replace(/&lt;/g, "<")
+
         .replace(/&gt;/g, ">")
+
         .replace(/&#x27;/g, "'")
+
         .replace(/&#x2F;/g, "/")
+
         .trim();
 
 }
