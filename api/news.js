@@ -12,7 +12,9 @@ export default async function handler(req, res) {
 
             "https://news.google.com/rss/search?q=Indian+cricket+players+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
 
-            "https://news.google.com/rss/search?q=BCCI+cricket+when:1d&hl=en-IN&gl=IN&ceid=IN:en"
+            "https://news.google.com/rss/search?q=BCCI+cricket+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+
+            "https://www.hindustantimes.com/feeds/rss/cricket/rssfeed.xml"
 
         ];
 
@@ -22,33 +24,36 @@ export default async function handler(req, res) {
 
             try {
 
-                const response = await fetch(feed);
+                const response = await fetch(feed, {
+                    headers: {
+                        "User-Agent": "Mozilla/5.0"
+                    }
+                });
 
                 if (!response.ok) continue;
 
                 const xml = await response.text();
 
                 const items =
-                    xml.match(/<item>[\s\S]*?<\/item>/gi) || [];
+                    xml.match(/<item[\s\S]*?<\/item>/gi) || [];
 
                 for (const item of items) {
 
                     const titleMatch =
-                        item.match(/<title>([\s\S]*?)<\/title>/i);
+                        item.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
 
                     const linkMatch =
-                        item.match(/<link>([\s\S]*?)<\/link>/i);
+                        item.match(/<link[^>]*>([\s\S]*?)<\/link>/i);
 
                     const dateMatch =
-                        item.match(/<pubDate>([\s\S]*?)<\/pubDate>/i);
+                        item.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/i);
 
                     const sourceMatch =
                         item.match(/<source[^>]*>([\s\S]*?)<\/source>/i);
 
-                    const descriptionMatch =
-                        item.match(/<description>([\s\S]*?)<\/description>/i);
-
-                    if (!titleMatch || !linkMatch) continue;
+                    if (!titleMatch || !linkMatch) {
+                        continue;
+                    }
 
                     const title =
                         cleanText(titleMatch[1]);
@@ -66,53 +71,110 @@ export default async function handler(req, res) {
                             ? cleanText(sourceMatch[1])
                             : "Cricket News";
 
+                    /*
+                     * Find article image
+                     */
+
                     let image = "";
 
-                    if (descriptionMatch) {
+                    // media:content
+                    let mediaContent =
+                        item.match(
+                            /<media:content[^>]+url=["']([^"']+)["']/i
+                        );
 
-                        const description =
-                            descriptionMatch[1];
+                    if (mediaContent) {
+                        image = cleanText(mediaContent[1]);
+                    }
 
-                        const imageMatch =
-                            description.match(
-                                /<img[^>]+src=["']([^"']+)["']/i
+                    // media:thumbnail
+                    if (!image) {
+
+                        let thumbnail =
+                            item.match(
+                                /<media:thumbnail[^>]+url=["']([^"']+)["']/i
                             );
 
-                        if (imageMatch) {
-                            image = imageMatch[1];
+                        if (thumbnail) {
+                            image = cleanText(thumbnail[1]);
                         }
 
                     }
 
-                    articles.push({
+                    // enclosure
+                    if (!image) {
 
-                        title,
-                        link,
-                        source,
-                        date,
-                        image
+                        let enclosure =
+                            item.match(
+                                /<enclosure[^>]+url=["']([^"']+)["']/i
+                            );
 
-                    });
+                        if (enclosure) {
+                            image = cleanText(enclosure[1]);
+                        }
+
+                    }
+
+                    // Image inside description
+                    if (!image) {
+
+                        let descriptionMatch =
+                            item.match(
+                                /<description[^>]*>([\s\S]*?)<\/description>/i
+                            );
+
+                        if (descriptionMatch) {
+
+                            let description =
+                                descriptionMatch[1];
+
+                            let imgMatch =
+                                description.match(
+                                    /<img[^>]+src=["']([^"']+)["']/i
+                                );
+
+                            if (imgMatch) {
+                                image = cleanText(imgMatch[1]);
+                            }
+                        }
+                    }
+
+                    if (title && link) {
+
+                        articles.push({
+
+                            title: title,
+
+                            link: link,
+
+                            source: source,
+
+                            date: date,
+
+                            image: image
+
+                        });
+
+                    }
 
                 }
 
-            } catch (error) {
+            } catch (feedError) {
 
-                console.error(
-                    "Feed error:",
-                    error
-                );
+                console.log("Feed error:", feedError);
 
             }
 
         }
 
 
-        // Remove duplicate headlines
+        /*
+         * Remove duplicate news
+         */
 
         const uniqueArticles = [];
 
-        const seen = new Set();
+        const seenTitles = new Set();
 
         for (const article of articles) {
 
@@ -122,9 +184,9 @@ export default async function handler(req, res) {
                     .replace(/\s+/g, " ")
                     .trim();
 
-            if (!seen.has(key)) {
+            if (!seenTitles.has(key)) {
 
-                seen.add(key);
+                seenTitles.add(key);
 
                 uniqueArticles.push(article);
 
@@ -133,7 +195,9 @@ export default async function handler(req, res) {
         }
 
 
-        // Newest first
+        /*
+         * Newest news first
+         */
 
         uniqueArticles.sort((a, b) => {
 
@@ -148,22 +212,29 @@ export default async function handler(req, res) {
         });
 
 
-        res.status(200).json(
-            uniqueArticles.slice(0, 50)
+        /*
+         * Return maximum 50 news articles
+         */
+
+        const result =
+            uniqueArticles.slice(0, 50);
+
+
+        res.setHeader(
+            "Cache-Control",
+            "s-maxage=300, stale-while-revalidate=600"
         );
+
+        res.status(200).json(result);
 
 
     } catch (error) {
 
-        console.error(
-            "News API Error:",
-            error
-        );
+        console.error("News API Error:", error);
 
         res.status(500).json({
 
-            error:
-                "Unable to load cricket news"
+            error: "Unable to load cricket news"
 
         });
 
@@ -172,29 +243,27 @@ export default async function handler(req, res) {
 }
 
 
+/*
+ * Clean RSS text
+ */
+
 function cleanText(text) {
 
-    return String(text)
+    if (!text) return "";
 
-        .replace(/<!\[CDATA\[/g, "")
+    return text
 
-        .replace(/\]\]>/g, "")
+        .replace(/<!\[CDATA\[/gi, "")
+        .replace(/\]\]>/gi, "")
 
-        .replace(/&amp;/g, "&")
-
-        .replace(/&quot;/g, '"')
-
-        .replace(/&#39;/g, "'")
-
-        .replace(/&apos;/g, "'")
-
-        .replace(/&lt;/g, "<")
-
-        .replace(/&gt;/g, ">")
-
-        .replace(/&#x27;/g, "'")
-
-        .replace(/&#x2F;/g, "/")
+        .replace(/&amp;/gi, "&")
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;/gi, "'")
+        .replace(/&apos;/gi, "'")
+        .replace(/&lt;/gi, "<")
+        .replace(/&gt;/gi, ">")
+        .replace(/&#x27;/gi, "'")
+        .replace(/&#x2F;/gi, "/")
 
         .trim();
 
