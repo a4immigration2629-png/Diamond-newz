@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="Diamond News - Latest Indian cricket news, Team India, IPL and player updates.">
+
+<title>Diamond News | Indian Cricket</title>
+
+
+<style>
+
+/* =========================
+   BASIC
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#050b16;
+    color:white;
+    padding-bottom:75px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    background:linear-gradient(135deg,#061b49,#092e68);
+    padding:16px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    border-bottom:1px solid #174b86;
+    box-shadow:0 5px 20px rgba(0,0,0,.25);
+}
+
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:900;
+}
+
+.logo span{
+    color:#168cff;
+}
+
+.tagline{
+    font-size:11px;
+    color:#b9c8dc;
+    margin-top:3px;
+}
+
+.update{
+    font-size:10px;
+    background:#0b5b9b;
+    padding:7px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+main{
+    padding:14px;
+    max-width:1100px;
+    margin:auto;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    background:linear-gradient(145deg,#0b1c36,#061120);
+    border:1px solid #123d6b;
+    border-radius:16px;
+    padding:19px;
+    margin-bottom:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+.hero h1{
+    font-size:27px;
+    margin-bottom:8px;
+}
+
+.hero p{
+    color:#aebdd0;
+    font-size:14px;
+    line-height:1.5;
+}
+
+
+/* =========================
+   FILTER BUTTONS
+========================= */
+
+.filters{
+    display:flex;
+    gap:7px;
+    margin-top:16px;
+    overflow-x:auto;
+    scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{
+    display:none;
+}
+
+.filters button{
+    border:0;
+    background:#12365f;
+    color:white;
+    padding:10px 15px;
+    border-radius:9px;
+    white-space:nowrap;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.filters button:hover{
+    background:#168cff;
+}
+
+
+/* =========================
+   SECTION TITLE
+========================= */
+
+.section-title{
+    font-size:20px;
+    margin:20px 0 12px;
+}
+
+
+/* =========================
+   NEWS
+========================= */
+
+.news{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+}
+
+.card{
+    background:#0b1728;
+    border:1px solid #14365a;
+    border-radius:15px;
+    overflow:hidden;
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-2px);
+    border-color:#168cff;
+}
+
+.card-image{
+    height:155px;
+    background:linear-gradient(135deg,#123b69,#071525);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:55px;
+}
+
+.card-content{
+    padding:16px;
+}
+
+.category{
+    display:inline-block;
+    background:#087ee0;
+    padding:5px 9px;
+    border-radius:5px;
+    font-size:10px;
+    font-weight:bold;
+    margin-bottom:9px;
+}
+
+.card h2{
+    font-size:17px;
+    line-height:1.4;
+    margin-bottom:9px;
+}
+
+.meta{
+    color:#73859b;
+    font-size:11px;
+    margin-top:8px;
+}
+
+.read-story{
+    display:inline-block;
+    margin-top:12px;
+    color:#168cff;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:13px;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+    text-align:center;
+    padding:50px 15px;
+    color:#aebdd0;
+    background:#0b1728;
+    border:1px solid #14365a;
+    border-radius:15px;
+}
+
+
+/* =========================
+   BIG WHATSAPP POPUP
+========================= */
+
+.whatsapp-popup-bg{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.82);
+
+    backdrop-filter:blur(7px);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:1000;
+
+    padding:18px;
+}
+
+
+.whatsapp-popup{
+
+    width:100%;
+
+    max-width:450px;
+
+    background:#071525;
+
+    border:2px solid #25D366;
+
+    border-radius:28px;
+
+    padding:42px 26px;
+
+    text-align:center;
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.8),
+        0 0 45px rgba(37,211,102,.25);
+
+    animation:popupAnimation .35s ease;
+}
+
+
+@keyframes popupAnimation{
+
+    from{
+        opacity:0;
+        transform:scale(.70);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+
+}
+
+
+.whatsapp-logo{
+
+    width:95px;
+
+    height:95px;
+
+    margin:0 auto 22px;
+
+    border-radius:50%;
+
+    background:#25D366;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:48px;
+
+    box-shadow:
+        0 10px 35px rgba(37,211,102,.4);
+}
+
+
+.whatsapp-popup h2{
+
+    font-size:29px;
+
+    margin-bottom:18px;
+
+    color:white;
+}
+
+
+.whatsapp-message{
+
+    background:#102438;
+
+    border:1px solid #2b506d;
+
+    border-radius:14px;
+
+    padding:18px 15px;
+
+    margin:18px 0 25px;
+
+    color:#ffffff;
+
+    font-size:17px;
+
+    font-weight:500;
+
+    line-height:1.5;
+
+    word-break:break-word;
+}
+
+
+.open-whatsapp{
+
+    display:block;
+
+    width:100%;
+
+    background:#25D366;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:18px;
+
+    border-radius:14px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    margin-bottom:14px;
+
+    box-shadow:
+        0 8px 25px rgba(37,211,102,.25);
+}
+
+
+.open-whatsapp:hover{
+
+    background:#20b957;
+}
+
+
+.close-popup{
+
+    background:transparent;
+
+    border:1px solid #3a526b;
+
+    color:#aebdd0;
+
+    padding:12px 24px;
+
+    border-radius:11px;
+
+    cursor:pointer;
+
+    font-size:14px;
+}
+
+
+/* =========================
+   FLOATING WHATSAPP
+========================= */
+
+.whatsapp{
+
+    position:fixed;
+
+    right:15px;
+
+    bottom:82px;
+
+    z-index:500;
+
+    background:#25D366;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:16px 22px;
+
+    border-radius:50px;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    box-shadow:0 7px 25px rgba(0,0,0,.5);
+}
+
+
+.whatsapp:hover{
+
+    background:#20b957;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+
+    background:#06101e;
+
+    border-top:1px solid #14365a;
+
+    padding:27px 15px;
+
+    margin-top:28px;
+
+    text-align:center;
+}
+
+
+.footer-logo{
+
+    font-size:20px;
+
+    font-weight:bold;
+}
+
+
+.footer-logo span{
+
+    color:#168cff;
+}
+
+
+.footer-links{
+
+    margin-top:15px;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+}
+
+
+.footer-links a{
+
+    color:#b8c6d8;
+
+    text-decoration:none;
+
+    font-size:12px;
+}
+
+
+.footer-links a:hover{
+
+    color:#168cff;
+}
+
+
+/* =========================
+   MOBILE NAV
+========================= */
+
+.mobile-nav{
+
+    position:fixed;
+
+    left:0;
+
+    right:0;
+
+    bottom:0;
+
+    height:65px;
+
+    background:#061b49;
+
+    border-top:1px solid #174b86;
+
+    display:flex;
+
+    justify-content:space-around;
+
+    align-items:center;
+
+    z-index:400;
+}
+
+
+.mobile-nav a{
+
+    color:white;
+
+    text-decoration:none;
+
+    text-align:center;
+
+    font-size:20px;
+}
+
+
+.mobile-nav span{
+
+    display:block;
+
+    font-size:10px;
+
+    margin-top:3px;
+
+    color:#b8c6d8;
+}
+
+
+/* =========================
+   DESKTOP
+========================= */
+
+@media(min-width:700px){
+
+    body{
+        padding-bottom:0;
+    }
+
+    .news{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .hero{
+        padding:27px;
+    }
+
+    .hero h1{
+        font-size:35px;
+    }
+
+    .mobile-nav{
+        display:none;
+    }
+
+    .whatsapp{
+        bottom:25px;
+    }
+
+}
+
+
+/* =========================
+   SMALL PHONES
+========================= */
+
+@media(max-width:400px){
+
+    .logo{
+        font-size:20px;
+    }
+
+    .update{
+        font-size:9px;
+        padding:6px 7px;
+    }
+
+    .hero h1{
+        font-size:24px;
+    }
+
+    .whatsapp-popup{
+        max-width:360px;
+        padding:35px 20px;
+    }
+
+    .whatsapp-popup h2{
+        font-size:25px;
+    }
+
+    .whatsapp-message{
+        font-size:15px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header>
+
+<div class="header">
+
+<div>
+
+<div class="logo">
+💎 DIAMOND <span>NEWS</span>
+</div>
+
+<div class="tagline">
+Indian Cricket • Daily • Always
+</div>
+
+</div>
+
+
+<div class="update">
+● AUTO UPDATES
+</div>
+
+</div>
+
+</header>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main>
+
+
+<section class="hero">
+
+<h1>
+🇮🇳 Indian Cricket News
+</h1>
+
+
+<p>
+Latest Indian cricket news, Team India updates,
+IPL news, player news and cricket stories.
+</p>
+
+
+<div class="filters">
+
+<button onclick="showAll()">
+All
+</button>
+
+
+<button onclick="showIndia()">
+India
+</button>
+
+
+<button onclick="showIPL()">
+IPL
+</button>
+
+
+<button onclick="showPlayers()">
+Players
+</button>
+
+</div>
+
+</section>
+
+
+
+<h2 class="section-title">
+🔥 Latest Cricket News
+</h2>
+
+
+
+<section
+class="news"
+id="news"
+>
+
+<div class="loading">
+
+🏏
+
+<br><br>
+
+Loading latest cricket news...
+
+</div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+<div class="footer-logo">
+
+💎 DIAMOND <span>NEWS</span>
+
+</div>
+
+
+<p
+style="
+color:#73859b;
+font-size:11px;
+margin-top:6px;
+">
+
+Indian Cricket • Daily • Always
+
+</p>
+
+
+<div class="footer-links">
+
+<a href="privacy.html">
+Privacy Policy
+</a>
+
+
+<a href="terms.html">
+Terms & Conditions
+</a>
+
+
+<a href="mailto:contact@diamondnews.com">
+Contact
+</a>
+
+</div>
+
+
+<p
+style="
+color:#596b80;
+font-size:10px;
+margin-top:18px;
+">
+
+© 2026 Diamond News.
+All rights reserved.
+
+</p>
+
+</footer>
+
+
+
+<!-- =========================
+     FLOATING WHATSAPP
+========================= -->
+
+<a
+
+class="whatsapp"
+
+href="https://wa.me/916378948840?text=hi%20i%20want%20cricket%20imformation"
+
+target="_blank"
+
+rel="noopener"
+
+>
+
+Chat on WhatsApp
+
+</a>
+
+
+
+<!-- =========================
+     FIRST OPEN WHATSAPP POPUP
+========================= -->
+
+<div
+
+class="whatsapp-popup-bg"
+
+id="whatsappPopup"
+
+>
+
+<div class="whatsapp-popup">
+
+
+<div class="whatsapp-logo">
+
+💬
+
+</div>
+
+
+<h2>
+
+Chat on WhatsApp
+
+</h2>
+
+
+<div class="whatsapp-message">
+
+hi i want cricket imformation
+
+</div>
+
+
+<a
+
+class="open-whatsapp"
+
+href="https://wa.me/916378948840?text=hi%20i%20want%20cricket%20imformation"
+
+target="_blank"
+
+rel="noopener"
+
+>
+
+Chat on WhatsApp
+
+</a>
+
+
+<button
+
+class="close-popup"
+
+onclick="closeWhatsAppPopup()"
+
+>
+
+Continue to website
+
+</button>
+
+
+</div>
+
+</div>
+
+
+
+<!-- =========================
+     MOBILE NAVIGATION
+========================= -->
+
+<nav class="mobile-nav">
+
+
+<a href="#news">
+
+🏠
+
+<span>
+Home
+</span>
+
+</a>
+
+
+<a
+
+href="#news"
+
+onclick="showIndia();return false;"
+
+>
+
+🇮🇳
+
+<span>
+India
+</span>
+
+</a>
+
+
+<a
+
+href="#news"
+
+onclick="showIPL();return false;"
+
+>
+
+🏆
+
+<span>
+IPL
+</span>
+
+</a>
+
+
+<a href="privacy.html">
+
+🔒
+
+<span>
+Privacy
+</span>
+
+</a>
+
+
+</nav>
+
+
+
+<script>
+
+
+/* =========================
+   NEWS DATA
+========================= */
+
+let allNews = [];
+
+
+/* =========================
+   LOAD NEWS
+========================= */
+
+async function loadNews(){
+
+    const newsBox =
+    document.getElementById("news");
+
+
+    newsBox.innerHTML = `
+
+        <div class="loading">
+
+            🏏
+
+            <br><br>
+
+            Loading latest cricket news...
+
+        </div>
+
+    `;
+
+
+    try{
+
+        const response =
+        await fetch("/api/news");
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "News API failed"
+            );
+
+        }
+
+
+        allNews =
+        await response.json();
+
+
+        if(
+            !Array.isArray(allNews) ||
+            allNews.length === 0
+        ){
+
+            throw new Error(
+                "No news available"
+            );
+
+        }
+
+
+        displayNews(allNews);
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+
+        newsBox.innerHTML = `
+
+            <div class="loading">
+
+                ⚠️
+
+                <br><br>
+
+                News is temporarily unavailable.
+
+                <br><br>
+
+                <button
+                onclick="loadNews()"
+                style="
+                background:#168cff;
+                color:white;
+                border:0;
+                padding:10px 16px;
+                border-radius:8px;
+                font-weight:bold;
+                cursor:pointer;
+                "
+                >
+
+                Try Again
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   DISPLAY NEWS
+========================= */
+
+function displayNews(news){
+
+    const newsBox =
+    document.getElementById("news");
+
+
+    newsBox.innerHTML = "";
+
+
+    if(!news.length){
+
+        newsBox.innerHTML = `
+
+            <div class="loading">
+
+                No news found.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    news.forEach(article => {
+
+
+        const card =
+        document.createElement("article");
+
+
+        card.className = "card";
+
+
+        card.innerHTML = `
+
+            <div class="card-image">
+
+                🏏
+
+            </div>
+
+
+            <div class="card-content">
+
+
+                <span class="category">
+
+                    INDIA CRICKET
+
+                </span>
+
+
+                <h2>
+
+                    ${escapeHTML(
+                        article.title || ""
+                    )}
+
+                </h2>
+
+
+                <div class="meta">
+
+                    ${escapeHTML(
+                        article.source ||
+                        "Cricket News"
+                    )}
+
+                </div>
+
+
+                <div class="meta">
+
+                    ${formatDate(
+                        article.date
+                    )}
+
+                </div>
+
+
+                <a
+
+                class="read-story"
+
+                href="${safeURL(
+                    article.link
+                )}"
+
+                target="_blank"
+
+                rel="noopener"
+
+                >
+
+                Read Full Story →
+
+                </a>
+
+
+            </div>
+
+        `;
+
+
+        newsBox.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(text){
+
+    return String(text)
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   SAFE URL
+========================= */
+
+function safeURL(url){
+
+    try{
+
+        const parsed =
+        new URL(url);
+
+
+        if(
+
+            parsed.protocol === "http:" ||
+
+            parsed.protocol === "https:"
+
+        ){
+
+            return encodeURI(
+                parsed.href
+            );
+
+        }
+
+    }
+
+    catch(error){}
+
+
+    return "#";
+
+}
+
+
+/* =========================
+   DATE FORMAT
+========================= */
+
+function formatDate(date){
+
+    if(!date){
+
+        return "Latest";
+
+    }
+
+
+    const d =
+    new Date(date);
+
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+
+        return "Latest";
+
+    }
+
+
+    return d.toLocaleString(
+
+        "en-IN",
+
+        {
+            dateStyle:"medium",
+            timeStyle:"short"
+        }
+
+    );
+
+}
+
+
+/* =========================
+   INDIA FILTER
+========================= */
+
+function showIndia(){
+
+    const filtered =
+    allNews.filter(article => {
+
+        const text =
+        (
+            article.title || ""
+        ).toLowerCase();
+
+
+        return (
+
+            text.includes("india") ||
+
+            text.includes("team india") ||
+
+            text.includes("bcci")
+
+        );
+
+    });
+
+
+    displayNews(
+        filtered.length
+        ? filtered
+        : allNews
+    );
+
+}
+
+
+/* =========================
+   IPL FILTER
+========================= */
+
+function showIPL(){
+
+    const filtered =
+    allNews.filter(article => {
+
+        const text =
+        (
+            article.title || ""
+        ).toLowerCase();
+
+
+        return text.includes("ipl");
+
+    });
+
+
+    displayNews(filtered);
+
+}
+
+
+/* =========================
+   PLAYERS FILTER
+========================= */
+
+function showPlayers(){
+
+    const filtered =
+    allNews.filter(article => {
+
+        const text =
+        (
+            article.title || ""
+        ).toLowerCase();
+
+
+        return (
+
+            text.includes("virat") ||
+
+            text.includes("rohit") ||
+
+            text.includes("bumrah") ||
+
+            text.includes("pant") ||
+
+            text.includes("gill") ||
+
+            text.includes("player")
+
+        );
+
+    });
+
+
+    displayNews(filtered);
+
+}
+
+
+/* =========================
+   ALL NEWS
+========================= */
+
+function showAll(){
+
+    displayNews(allNews);
+
+}
+
+
+/* =========================
+   CLOSE WHATSAPP POPUP
+========================= */
+
+function closeWhatsAppPopup(){
+
+    document.getElementById(
+        "whatsappPopup"
+    ).style.display = "none";
+
+}
+
+
+/* =========================
+   CLOSE BY TAPPING OUTSIDE
+========================= */
+
+document
+
+.getElementById("whatsappPopup")
+
+.addEventListener(
+
+    "click",
+
+    function(event){
+
+        if(
+            event.target === this
+        ){
+
+            closeWhatsAppPopup();
+
+        }
+
+    }
+
+);
+
+
+/* =========================
+   START WEBSITE
+========================= */
+
+loadNews();
+
+
+/* =========================
+   AUTOMATIC REFRESH
+   EVERY 30 MINUTES
+========================= */
+
+setInterval(
+
+    loadNews,
+
+    30 * 60 * 1000
+
+);
+
+</script>
+
+
+</body>
+
+</html>
